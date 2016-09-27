@@ -121,8 +121,14 @@ class hosts implements host_interface {
 			$this->wp_config_path = $config_file;
 			$this->wp_is_installed = 'true';
 		} else {
-			$this->wp_config_path = '';
-			$this->wp_is_installed = 'false';
+			$config_file = $this->wp_path . '/htdocs/wp-config.php';
+			if ( file_exists( $config_file ) ) {
+				$this->wp_config_path = $config_file;
+				$this->wp_is_installed = 'true';
+			} else {
+				$this->wp_config_path = '';
+				$this->wp_is_installed = 'false';
+			}
 		}
 
 	}
@@ -175,9 +181,14 @@ class hosts implements host_interface {
 	}
 
 	public function set_version() {
+		$version_file = '';
 		if ( file_exists( $this->wp_path . '/wp-includes/version.php' ) ) {
-
 			$version_file = $this->wp_path . '/wp-includes/version.php';
+		} elseif ( file_exists( $this->wp_path . '/htdocs/wp-includes/version.php' ) ) {
+			$version_file = $this->wp_path . '/htdocs/wp-includes/version.php';
+		}
+		
+		if ( '' !== $version_file ) {
 			$file_lines   = file( $version_file );
 			$lines        = array_splice( $file_lines, 0, 15 );
 			$version      = 'false';
